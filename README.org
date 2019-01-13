@@ -65,14 +65,14 @@
 
    - After each bet, display the amount of money left.
 
-   - All output pertaining to money should display the amount in whole
-   dollars (no decimals needed) with a dollar sign.
+   - All output pertaining to money should display the amount in whole dollars
+     (no decimals needed) with a dollar sign.
 
-   - After a spin, indicate the net gain from the bets for that spin and
-   the current amount of money the gambler has.
+   - After a spin, indicate the net gain from the bets for that spin and the
+     current amount of money the gambler has.
 
-   - When the gambler leaves the table, thank the gambler for playing
-   and display the total amount of winnings (or losses).
+   - When the gambler leaves the table, thank the gambler for playing and
+     display the total amount of winnings (or losses).
 
-   - For example, if the player started with $1000 and left the table
-   with $1200, indicate the player won $200.
+   - For example, if the player started with $1000 and left the table with
+     $1200, indicate the player won $200.
