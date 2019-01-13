@@ -1,0 +1,38 @@
+name:                roulette
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/willbush/roulette#readme
+license:             MIT
+author:              Will Bush
+maintainer:          will.g.bush@gmail.com
+copyright:           2019 Will Bush
+category:            Web
+extra-source-files:
+- README.org
+
+dependencies:
+  - base >= 4.7 && < 5
+
+executables:
+  roulette:
+    source-dirs:      src
+    main:             Main.hs
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+
+tests:
+  roulette-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - hspec
+    - QuickCheck
