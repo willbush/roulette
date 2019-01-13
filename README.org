@@ -1,0 +1,76 @@
+* Roulette
+
+  This project is a toy (goofing off) project for the sake of playing with
+  Haskell. I lifted the following spec from an old programming assignment,
+  rewrote it, and removed the implementation restrictions.
+
+  Develop a program simulates playing a simplified Roulette.
+
+  The Roulette wheel is a modified version of an actual Roulette wheel:
+
+  - numbered 0 - 36 (no 00)
+  - 0 is neither even, nor odd, nor red, nor black.
+  - 1-36 are associated with either red or black.
+
+  The gambler will have the option of placing a maximum of 8 bets on the table
+  per “spin”. The bets may be of any of the following types:
+
+  | Bet Type    | Payout | Description                       |
+  |-------------+--------+-----------------------------------|
+  | Single #    |   35:1 | numbers [0, 36]                   |
+  | Red / Black |    1:1 | see Roulette board                |
+  | Even / Odd  |    1:1 | even or odd bet                   |
+  | High / Low  |    1:1 | (1-18) or (19-36)                 |
+  | Dozen       |    2:1 | (1-12), (13-24), or (25-36)       |
+  | Column      |    2:1 | bet on a column (see table below) |
+
+  Column 1: | 1 R | 4 B | 7 R | 10 B | 13 B | 16 R | 19 R | 22 B | 25 R | 28 B | 31 B | 34 R |
+  Column 2: | 2 B | 5 R | 8 B | 11 B | 14 R | 17 B | 20 B | 23 R | 26 B | 29 B | 32 R | 35 B |
+  Column 3: | 3 R | 6 B | 9 R | 12 R | 15 B | 18 R | 21 R | 24 B | 27 R | 30 R | 33 B | 36 R |
+
+  Table key: R = Red, B = Black
+
+  Please note that everything the gambler wins is in excess of the current
+  bet. If a gambler bets $2 on a single number and wins they keep the $2 bet
+  and the casino gives them $70.
+
+  The gambler may never place a bet that would cause them to have negative
+  dollars. The program should keep track of all bets placed for a spin and never
+  let the gambler bet more than they have available. For example, if the gambler
+  tries to place 4 bets and the third bet exceeds the amount of money available,
+  that bet and all future bets that round are voided. The bet which exceeds the
+  available amount should be set to 0 and the gambler should not be prompted for
+  any more bets for that spin.
+
+  After collecting the bets from the gambler, spin the Roulette wheel and
+  determine the net gain of the gambler. Each spin should be a randomly
+  generated number from 0 – 36. The gambler may leave the table after any
+  spin. Once a bet is placed, the gambler must wait until the outcome of the
+  spin to stop.
+
+** Input
+
+   1. Prompt user for amount to gamble in range [1, 10000]
+   2. Prompt user for number of bets to be placed in range [1, 8].
+   3. For each bet place, prompt for bet type and amount using a menu.
+
+   Every bet must be a positive, whole number greater than zero, and the maximum
+   bet is $500.
+
+   4. After a spin, prompt to bet again or walk away.
+
+** Output
+
+   - After each bet, display the amount of money left.
+
+   - All output pertaining to money should display the amount in whole
+   dollars (no decimals needed) with a dollar sign.
+
+   - After a spin, indicate the net gain from the bets for that spin and
+   the current amount of money the gambler has.
+
+   - When the gambler leaves the table, thank the gambler for playing
+   and display the total amount of winnings (or losses).
+
+   - For example, if the player started with $1000 and left the table
+   with $1200, indicate the player won $200.
