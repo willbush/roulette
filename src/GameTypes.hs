@@ -1,17 +1,4 @@
-module GameTypes
-  ( Balance
-  , SquareNum
-  , Amount
-  , NumPrompt(..)
-  , Color(..)
-  , Parity(..)
-  , Position(..)
-  , DozenChoice(..)
-  , ColumnChoice(..)
-  , BetType(..)
-  , BetChoice(..)
-  , Bet(..)
-  ) where
+module GameTypes where
 
 type Balance = Int
 
