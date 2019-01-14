@@ -223,7 +223,7 @@ positionBetPrompt = NumPrompt prompt 1 2
         ]
 
 dozenBetPrompt :: NumPrompt
-dozenBetPrompt = NumPrompt prompt 1 2
+dozenBetPrompt = NumPrompt prompt 1 3
   where
     prompt =
       concat
@@ -234,7 +234,7 @@ dozenBetPrompt = NumPrompt prompt 1 2
         ]
 
 columnBetPrompt :: NumPrompt
-columnBetPrompt = NumPrompt prompt 1 2
+columnBetPrompt = NumPrompt prompt 1 3
   where
     prompt =
       concat
@@ -245,7 +245,7 @@ columnBetPrompt = NumPrompt prompt 1 2
         ]
 
 betTypePrompt :: NumPrompt
-betTypePrompt = NumPrompt prompt 1 500
+betTypePrompt = NumPrompt prompt 1 6
   where
     prompt =
       concat
