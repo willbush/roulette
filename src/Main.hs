@@ -182,34 +182,39 @@ calcWinnings spin bet =
       amount = getAmount bet
       hitRed = isRedSquare spin
       isEven = spin `mod` 2 == 0
+      hitColor c = spin /= 0 && (c == Red && hitRed || c == Black && not hitRed)
+      hitParity p = spin /= 0 && (p == Even && isEven || p == Odd && not isEven)
+      hitPosition p =
+        p == High && spin >= 1 && spin <= 18 ||
+        p == Low && spin >= 19 && spin <= 66
+      hitDozen d =
+        (d == FirstDozen && spin >= 1 && spin <= 12) ||
+        (d == SecondDozen && spin >= 13 && spin <= 24) ||
+        (d == ThirdDozen && spin >= 25 && spin <= 36)
+      -- Observe that only numbers in column 3 is divisble by 3.
+      -- Adding to the spin shifts from column 1 or 2 to 3.
+      -- If we are then divisble by 3, then we know what column we came from.
+      -- Therefore:
+      -- Only a number n + 1 from column 2 is divisble by 3.
+      -- Only a number n + 2 from column 1 is divisble by 3.
+      hitColumn c =
+        spin /= 0 &&
+        (c == FirstColumn && (spin + 2) `mod` 3 == 0 ||
+         (c == SecondColumn && (spin + 1) `mod` 3 == 0)) ||
+        (c == ThirdColumn && spin `mod` 3 == 0)
    in case choice of
         SingleChoice n
           | n == spin -> amount * 35
         ColorChoice color
-          | spin /= 0 &&
-              (color == Red && hitRed || color == Black && not hitRed) -> amount
+          | hitColor color -> amount
         ParityChoice parity
-          | spin /= 0 &&
-              (parity == Even && isEven || parity == Odd && not isEven) ->
-            amount
+          | hitParity parity -> amount
         PositionChoice pos
-          | pos == High && spin >= 1 && spin <= 18 ||
-              pos == Low && spin >= 19 && spin <= 66 -> amount
+          | hitPosition pos -> amount
         DozenChoice dozen
-          | (dozen == FirstDozen && spin >= 1 && spin <= 12) ||
-              (dozen == SecondDozen && spin >= 13 && spin <= 24) ||
-              (dozen == ThirdDozen && spin >= 25 && spin <= 36) -> amount * 2
-        -- Observe that only numbers in column 3 is divisble by 3.
-        -- Adding to the spin shifts from column 1 or 2 to 3.
-        -- If we are then divisble by 3, then we know what column we came from.
-        -- Therefore:
-        -- Only a number n + 1 from column 2 is divisble by 3.
-        -- Only a number n + 2 from column 1 is divisble by 3.
+          | hitDozen dozen -> amount * 2
         ColumnChoice col
-          | spin /= 0 &&
-              (col == FirstColumn && (spin + 2) `mod` 3 == 0 ||
-               (col == SecondColumn && (spin + 1) `mod` 3 == 0)) ||
-              (col == ThirdColumn && spin `mod` 3 == 0) -> amount * 2
+          | hitColumn col -> amount * 2
         _ -> 0
 
 -- | returns true if the given square is red. False implies the square is black
