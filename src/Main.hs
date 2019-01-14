@@ -2,10 +2,10 @@
 
 module Main where
 
-import GameTypes
-import GamePrompts
 import Control.Monad (foldM)
 import Data.List (foldl')
+import GamePrompts
+import GameTypes
 import System.Random (randomRIO)
 import Text.Read (readMaybe)
 
@@ -20,28 +20,26 @@ main = do
     else putStrLn "Better luck next time!"
 
 playRoulette :: Balance -> IO Balance
-playRoulette = playUntilDone
-  where
-    playUntilDone balance = do
-      bets <- collectBets balance
-      spin <- randomRIO (0, 36 :: SquareNum)
-      putStrLn $ "!!!!!!! Spun a " ++ show spin ++ " !!!!!!!"
-      let newBalance = foldl' (calcNewBalance spin) balance bets
-       in do putStrLn $ "Net Gain: " ++ formatMoney (newBalance - balance)
-             putStrLn $ "Your Balance: " ++ formatMoney newBalance
-             if newBalance > 0
-               then do
-                 playAgain <- promptToPlayAgain
-                 if playAgain
-                   then playUntilDone newBalance
-                   else pure newBalance
+playRoulette balance = do
+  bets <- collectBets balance
+  spin <- randomRIO (0, 36 :: SquareNum)
+  putStrLn $ "!!!!!!! Spun a " ++ show spin ++ " !!!!!!!"
+  let newBalance = foldl' calcNewBalance balance bets
+      calcNewBalance :: Balance -> Bet -> Balance
+      calcNewBalance currentBalance bet =
+        let winnings = calcWinnings spin bet
+         in if winnings > 0
+              then currentBalance + winnings
+              else currentBalance - getAmount bet
+   in do putStrLn $ "Net Gain: " ++ formatMoney (newBalance - balance)
+         putStrLn $ "Your Balance: " ++ formatMoney newBalance
+         if newBalance > 0
+           then do
+             playAgain <- promptToPlayAgain
+             if playAgain
+               then playRoulette newBalance
                else pure newBalance
-    calcNewBalance :: SquareNum -> Balance -> Bet -> Balance
-    calcNewBalance spin balance bet =
-      let winnings = calcWinnings spin bet
-       in if winnings > 0
-            then balance + winnings
-            else balance - getAmount bet
+           else pure newBalance
 
 collectBets :: Balance -> IO [Bet]
 collectBets balance = do
