@@ -44,7 +44,7 @@ playRoulette balance = do
 collectBets :: Balance -> IO [Bet]
 collectBets balance = do
   numOfBets <- promptForNum betNumberPrompt
-  reverse <$> foldM promptForBet [] [1 .. numOfBets]
+  foldM promptForBet [] [1 .. numOfBets]
   where
     promptForBet :: [Bet] -> Int -> IO [Bet]
     promptForBet currentBets betNum = do
