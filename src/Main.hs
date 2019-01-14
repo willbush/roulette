@@ -3,6 +3,7 @@
 module Main where
 
 import Control.Monad (foldM)
+import System.Random (randomRIO)
 import Text.Read (readMaybe)
 
 type Balance = Int
@@ -16,29 +17,29 @@ data NumPrompt = NumPrompt
 data Color
   = Red
   | Black
-  deriving (Enum, Show)
+  deriving (Eq, Enum, Show)
 
 data Parity
   = Even
   | Odd
-  deriving (Enum, Show)
+  deriving (Eq, Enum, Show)
 
 data Position
   = High
   | Low
-  deriving (Enum, Show)
+  deriving (Eq, Enum, Show)
 
 data DozenChoice
   = FirstDozen
   | SecondDozen
   | ThirdDozen
-  deriving (Enum, Show)
+  deriving (Eq, Enum, Show)
 
 data ColumnChoice
   = FirstColumn
   | SecondColumn
   | ThirdColumn
-  deriving (Enum, Show)
+  deriving (Eq, Enum, Show)
 
 data BetType
   = Single
@@ -60,7 +61,7 @@ data BetChoice
 
 data Bet = Bet
   { getAmount :: !Int
-  , getType :: !BetChoice
+  , getChoice :: !BetChoice
   } deriving (Show)
 
 main :: IO ()
@@ -79,6 +80,8 @@ playRoulette = playUntilGameOver
   where
     playUntilGameOver currentBalance = do
       bets <- collectBets currentBalance
+      spin <- randomRIO (0, 36 :: Int)
+      putStrLn $ "!!!!!!! Spun a " ++ show spin ++ " !!!!!!!"
       putStrLn $ "Your bets are: " ++ show bets
       putStrLn $ "current balance is: " ++ show currentBalance
       putStrLn "pretending like user lost $100."
@@ -173,6 +176,31 @@ promptForNum prompt = prompUntilValid
           putStrLn errorMsg
           prompUntilValid
 
+calcWinnings :: Int -> Bet -> Int
+calcWinnings spin bet =
+  let choice = getChoice bet
+      amount = getAmount bet
+      hitRed = isRedSquare spin
+   in case choice of
+        SingleChoice n
+          | n == spin -> amount * 35
+        ColorChoice color
+          | color == Red && hitRed || color == Black && not hitRed -> amount
+        _ -> 0
+
+-- returns true if the given square is red. False implies the square is black
+-- Assumes input is correctly between 1 and 36 inclusive.
+isRedSquare :: Int -> Bool
+isRedSquare n =
+  let isEven = n `mod` 2 == 0
+      isOdd = not isEven
+   -- from observation the first 10 numbers red is odd, next 8 its even,
+   -- next 10 its odd, and final 8 it's even again. Black also alternates
+   -- for the same ranges of numbers.
+   in (n >= 1 && n <= 10 && isOdd) ||
+      (n >= 11 && n <= 18 && isEven) ||
+      (n >= 19 && n <= 28 && isOdd) || (n >= 29 && n <= 26 && isEven)
+
 gambleAmountPrompt :: NumPrompt
 gambleAmountPrompt =
   NumPrompt "Please enter an amount to gamble between 1 and 10000: " 1 10000
@@ -182,11 +210,9 @@ betNumberPrompt =
   NumPrompt "Please enter the number of bets between 1 and 8: " 1 8
 
 betAmountPrompt :: NumPrompt
-betAmountPrompt =
-  NumPrompt
-    "Please give a bet amount in whole numbers between 1 and 500: "
-    1
-    500
+betAmountPrompt = NumPrompt prompt 1 500
+  where
+    prompt = "Please give a bet amount in whole numbers between 1 and 500: "
 
 singleBetPrompt :: NumPrompt
 singleBetPrompt =
@@ -196,7 +222,7 @@ colorBetPrompt :: NumPrompt
 colorBetPrompt = NumPrompt prompt 1 2
   where
     prompt =
-        "Please select a color to bet on from the options below:\n\
+      "Please select a color to bet on from the options below:\n\
         \1. Red\n\
         \2. Black\n"
 
@@ -204,7 +230,7 @@ parityBetPrompt :: NumPrompt
 parityBetPrompt = NumPrompt prompt 1 2
   where
     prompt =
-        "Please select to bet on even or odd from the options below:\n\
+      "Please select to bet on even or odd from the options below:\n\
         \1. Even\n\
         \2. Odd\n"
 
@@ -212,7 +238,7 @@ positionBetPrompt :: NumPrompt
 positionBetPrompt = NumPrompt prompt 1 2
   where
     prompt =
-        "Please select to bet on high (1-18) or low (19-36) from the options below:\n\
+      "Please select to bet on high (1-18) or low (19-36) from the options below:\n\
         \1. High\n\
         \2. Low\n"
 

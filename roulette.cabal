@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fcaec1aaf4ab4387331f4fddd26af304e448be962ca3ebe8260269d7bc21d51a
+-- hash: 9f4db6d030f8084cbb6f370312faab2d1156c8cd06176c250a0ae274eafa7336
 
 name:           roulette
 version:        0.1.0.0
@@ -28,6 +28,7 @@ executable roulette
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , random
   default-language: Haskell2010
 
 test-suite roulette-test
@@ -42,4 +43,5 @@ test-suite roulette-test
       QuickCheck
     , base >=4.7 && <5
     , hspec
+    , random
   default-language: Haskell2010
