@@ -8,6 +8,10 @@ import Text.Read (readMaybe)
 
 type Balance = Int
 
+type SquareNum = Int
+
+type Amount = Int
+
 data NumPrompt = NumPrompt
   { getPrompt :: !String
   , getMin :: !Int
@@ -51,7 +55,7 @@ data BetType
   deriving (Enum, Show)
 
 data BetChoice
-  = SingleChoice Int
+  = SingleChoice SquareNum
   | ColorChoice Color
   | ParityChoice Parity
   | PositionChoice Position
@@ -60,7 +64,7 @@ data BetChoice
   deriving (Show)
 
 data Bet = Bet
-  { getAmount :: !Int
+  { getAmount :: !Amount
   , getChoice :: !BetChoice
   } deriving (Show)
 
@@ -80,7 +84,7 @@ playRoulette = playUntilGameOver
   where
     playUntilGameOver currentBalance = do
       bets <- collectBets currentBalance
-      spin <- randomRIO (0, 36 :: Int)
+      spin <- randomRIO (0, 36 :: SquareNum)
       putStrLn $ "!!!!!!! Spun a " ++ show spin ++ " !!!!!!!"
       putStrLn $ "Your bets are: " ++ show bets
       putStrLn $ "current balance is: " ++ show currentBalance
@@ -123,7 +127,7 @@ collectBets balance = do
                  bet <- getBet amount $ toEnum (betTypeNum - 1)
                  pure $ bet : currentBets
 
-getBet :: Int -> BetType -> IO Bet
+getBet :: Amount -> BetType -> IO Bet
 getBet amount t =
   case t of
     Single -> do
@@ -145,7 +149,7 @@ getBet amount t =
       n <- promptForNum columnBetPrompt
       pure $ Bet amount $ ColumnChoice $ toEnum (n - 1)
 
-formatMoney :: Int -> String
+formatMoney :: Amount -> String
 formatMoney x =
   if x < 0
     then "-$" ++ show x
@@ -176,35 +180,47 @@ promptForNum prompt = prompUntilValid
           putStrLn errorMsg
           prompUntilValid
 
-calcWinnings :: Int -> Bet -> Int
-calcWinnings spin bet =
+-- | Calculates the winnings based on the bet and the number that got spun.
+calcWinnings :: SquareNum -> Bet -> Int
+calcWinnings n bet =
   let choice = getChoice bet
       amount = getAmount bet
-      hitRed = isRedSquare spin
-      isEven = spin `mod` 2 == 0
-      hitColor c = spin /= 0 && (c == Red && hitRed || c == Black && not hitRed)
-      hitParity p = spin /= 0 && (p == Even && isEven || p == Odd && not isEven)
+      isEven = n `mod` 2 == 0
+      isOdd = not isEven
+      -- from observation the first 10 numbers red is odd, next 8 its even,
+      -- next 10 its odd, and final 8 it's even again. Black also alternates
+      -- for the same ranges of numbers.
+      -- Note that 0 is neither red or black
+      hitRed =
+        n /= 0 &&
+        ((n >= 1 && n <= 10 && isOdd) ||
+         (n >= 11 && n <= 18 && isEven) ||
+         (n >= 19 && n <= 28 && isOdd) || (n >= 29 && n <= 26 && isEven))
+      hitBlack = n /= 0 && not hitRed
+      hitColor c = c == Red && hitRed || c == Black && hitBlack
+      -- Note that 0 is neither even or odd in Roulette
+      hitParity p = n /= 0 && (p == Even && isEven || p == Odd && not isEven)
       hitPosition p =
-        p == High && spin >= 1 && spin <= 18 ||
-        p == Low && spin >= 19 && spin <= 66
+        p == High && n >= 1 && n <= 18 || p == Low && n >= 19 && n <= 66
       hitDozen d =
-        (d == FirstDozen && spin >= 1 && spin <= 12) ||
-        (d == SecondDozen && spin >= 13 && spin <= 24) ||
-        (d == ThirdDozen && spin >= 25 && spin <= 36)
+        (d == FirstDozen && n >= 1 && n <= 12) ||
+        (d == SecondDozen && n >= 13 && n <= 24) ||
+        (d == ThirdDozen && n >= 25 && n <= 36)
       -- Observe that only numbers in column 3 is divisble by 3.
-      -- Adding to the spin shifts from column 1 or 2 to 3.
+      -- Adding to the square number shifts from column 1 or 2 to 3.
       -- If we are then divisble by 3, then we know what column we came from.
       -- Therefore:
       -- Only a number n + 1 from column 2 is divisble by 3.
       -- Only a number n + 2 from column 1 is divisble by 3.
+      -- Note that 0 is not on a column.
       hitColumn c =
-        spin /= 0 &&
-        (c == FirstColumn && (spin + 2) `mod` 3 == 0 ||
-         (c == SecondColumn && (spin + 1) `mod` 3 == 0)) ||
-        (c == ThirdColumn && spin `mod` 3 == 0)
+        n /= 0 &&
+        (c == FirstColumn && (n + 2) `mod` 3 == 0 ||
+         (c == SecondColumn && (n + 1) `mod` 3 == 0)) ||
+        (c == ThirdColumn && n `mod` 3 == 0)
    in case choice of
-        SingleChoice n
-          | n == spin -> amount * 35
+        SingleChoice c
+          | c == n -> amount * 35
         ColorChoice color
           | hitColor color -> amount
         ParityChoice parity
@@ -216,19 +232,6 @@ calcWinnings spin bet =
         ColumnChoice col
           | hitColumn col -> amount * 2
         _ -> 0
-
--- | returns true if the given square is red. False implies the square is black
--- Assumes input is correctly between 1 and 36 inclusive.
-isRedSquare :: Int -> Bool
-isRedSquare n =
-  let isEven = n `mod` 2 == 0
-      isOdd = not isEven
-   -- from observation the first 10 numbers red is odd, next 8 its even,
-   -- next 10 its odd, and final 8 it's even again. Black also alternates
-   -- for the same ranges of numbers.
-   in (n >= 1 && n <= 10 && isOdd) ||
-      (n >= 11 && n <= 18 && isEven) ||
-      (n >= 19 && n <= 28 && isOdd) || (n >= 29 && n <= 26 && isEven)
 
 gambleAmountPrompt :: NumPrompt
 gambleAmountPrompt =
