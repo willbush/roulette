@@ -2,7 +2,6 @@
 
 module Main where
 
-import Control.Monad (foldM)
 import Data.List (foldl')
 import GamePrompts
 import GameTypes
@@ -44,32 +43,17 @@ playRoulette balance = do
 collectBets :: Balance -> IO [Bet]
 collectBets balance = do
   numOfBets <- promptForNum betNumberPrompt
-  foldM promptForBet [] [1 .. numOfBets]
+  go [1 .. numOfBets] balance []
   where
-    promptForBet :: [Bet] -> Int -> IO [Bet]
-    promptForBet currentBets betNum = do
+    go [] _ bets = pure bets
+    go _ 0 bets = pure bets
+    go (betNum:betNums) available bets = do
       putStrLn $ "\nBet number " ++ show betNum ++ ":"
-      let betTotal = sum (map getAmount currentBets)
-          available = balance - betTotal
-       in do putStrLn $
-               "The amount available to bet is: " ++ formatMoney available
-             amount <- promptForNum betAmountPrompt
-             if amount > available
-               then let errorMsg =
-                          concat
-                            [ "You bet amount "
-                            , formatMoney amount
-                            , " exceeds the amount you have available to gamble "
-                            , show available
-                            , "\n"
-                            , "Voiding current and any remaining bets.\n\n"
-                            ]
-                     in do putStrLn errorMsg
-                           pure currentBets
-               else do
-                 betTypeNum <- promptForNum betTypePrompt
-                 bet <- getBet amount $ toEnum (betTypeNum - 1)
-                 pure $ bet : currentBets
+      putStrLn $ "The amount available to gamble is: " ++ formatMoney available
+      amount <- promptForNum $ betAmountPrompt available
+      betTypeNum <- promptForNum betTypePrompt
+      bet <- getBet amount $ toEnum (betTypeNum - 1)
+      go betNums (available - getAmount bet) (bet : bets)
 
 getBet :: Amount -> BetType -> IO Bet
 getBet amount t =

@@ -7,13 +7,22 @@ gambleAmountPrompt =
   NumPrompt "Please enter an amount to gamble between 1 and 10000: " 1 10000
 
 betNumberPrompt :: NumPrompt
-betNumberPrompt =
-  NumPrompt "Please enter the number of bets between 1 and 8: " 1 8
-
-betAmountPrompt :: NumPrompt
-betAmountPrompt = NumPrompt prompt 1 500
+betNumberPrompt = NumPrompt prompt 1 8
   where
-    prompt = "Please give a bet amount in whole numbers between 1 and 500: "
+    prompt =
+      "Please enter the number of bets between 1 and 8:\n\
+        \Note that each bet may not exceed $500:"
+
+betAmountPrompt :: Balance -> NumPrompt
+betAmountPrompt balanceAvailable = NumPrompt prompt 1 maxBetAmount
+  where
+    maxBetAmount = min 500 balanceAvailable
+    prompt =
+      concat
+        [ "Please give a bet amount in whole numbers between 1 and "
+        , show maxBetAmount
+        , ": "
+        ]
 
 singleBetPrompt :: NumPrompt
 singleBetPrompt =
