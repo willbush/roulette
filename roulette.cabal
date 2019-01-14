@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9f4db6d030f8084cbb6f370312faab2d1156c8cd06176c250a0ae274eafa7336
+-- hash: 39424da5bbb3e5eae08fd92b1e0125e905083847e90af57e86e2f71514a8b75f
 
 name:           roulette
 version:        0.1.0.0
@@ -22,6 +22,7 @@ extra-source-files:
 executable roulette
   main-is: Main.hs
   other-modules:
+      GameTypes
       Paths_roulette
   hs-source-dirs:
       src

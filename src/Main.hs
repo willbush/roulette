@@ -2,72 +2,11 @@
 
 module Main where
 
+import GameTypes
 import Control.Monad (foldM)
 import Data.List (foldl')
 import System.Random (randomRIO)
 import Text.Read (readMaybe)
-
-type Balance = Int
-
-type SquareNum = Int
-
-type Amount = Int
-
-data NumPrompt = NumPrompt
-  { getPrompt :: !String
-  , getMin :: !Int
-  , getMax :: !Int
-  }
-
-data Color
-  = Red
-  | Black
-  deriving (Eq, Enum, Show)
-
-data Parity
-  = Even
-  | Odd
-  deriving (Eq, Enum, Show)
-
-data Position
-  = High
-  | Low
-  deriving (Eq, Enum, Show)
-
-data DozenChoice
-  = FirstDozen
-  | SecondDozen
-  | ThirdDozen
-  deriving (Eq, Enum, Show)
-
-data ColumnChoice
-  = FirstColumn
-  | SecondColumn
-  | ThirdColumn
-  deriving (Eq, Enum, Show)
-
-data BetType
-  = Single
-  | RedBlack
-  | EvenOdd
-  | HighLow
-  | Dozen
-  | Column
-  deriving (Enum, Show)
-
-data BetChoice
-  = SingleChoice SquareNum
-  | ColorChoice Color
-  | ParityChoice Parity
-  | PositionChoice Position
-  | DozenChoice DozenChoice
-  | ColumnChoice ColumnChoice
-  deriving (Show)
-
-data Bet = Bet
-  { getAmount :: !Amount
-  , getChoice :: !BetChoice
-  } deriving (Show)
 
 main :: IO ()
 main = do
@@ -75,19 +14,13 @@ main = do
   initialBalance <- promptForNum gambleAmountPrompt
   finalBalance <- playRoulette initialBalance
   putStrLn "Thank you for playing!"
-  let finalNetGain = finalBalance - initialBalance
-   in if finalNetGain > 0
-        then putStrLn "Congratulations!"
-        else putStrLn "Better luck next time!"
+  if finalBalance - initialBalance > 0
+    then putStrLn "Congratulations!"
+    else putStrLn "Better luck next time!"
 
 playRoulette :: Balance -> IO Balance
 playRoulette = playUntilDone
   where
-    calcNewBalance spin balance bet =
-      let winnings = calcWinnings spin bet
-       in if winnings > 0
-            then balance + winnings
-            else balance - getAmount bet
     playUntilDone balance = do
       bets <- collectBets balance
       spin <- randomRIO (0, 36 :: SquareNum)
@@ -102,6 +35,12 @@ playRoulette = playUntilDone
                    then playUntilDone newBalance
                    else pure newBalance
                else pure newBalance
+    calcNewBalance :: SquareNum -> Balance -> Bet -> Balance
+    calcNewBalance spin balance bet =
+      let winnings = calcWinnings spin bet
+       in if winnings > 0
+            then balance + winnings
+            else balance - getAmount bet
 
 collectBets :: Balance -> IO [Bet]
 collectBets balance = do
