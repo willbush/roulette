@@ -1,12 +1,10 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Main where
 
-import Data.List (foldl')
+import Data.List     (foldl')
 import GamePrompts
 import GameTypes
 import System.Random (randomRIO)
-import Text.Read (readMaybe)
+import Text.Read     (readMaybe)
 
 main :: IO ()
 main = do
