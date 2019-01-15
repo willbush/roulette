@@ -76,3 +76,9 @@
 
    - For example, if the player started with $1000 and left the table with
      $1200, indicate the player won $200.
+
+** Building and Running
+
+   1. clone the repo
+   2. install [[https://docs.haskellstack.org/en/stable/README/][stack]]
+   3. cd into the directory of the repository and =stack run=
