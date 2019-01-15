@@ -109,52 +109,53 @@ promptForNum prompt = prompUntilValid
 -- | Calculates the winnings based on the bet and the number that got spun.
 calcWinnings :: SquareNum -> Bet -> Int
 calcWinnings n bet =
-  let choice = getChoice bet
-      amount = getAmount bet
-      isEven = n `mod` 2 == 0
-      isOdd = not isEven
-      -- from observation the first 10 numbers red is odd, next 8 its even,
-      -- next 10 its odd, and final 8 it's even again. Black also alternates
-      -- for the same ranges of numbers.
-      -- Note that 0 is neither red or black
-      hitRed =
-        n /= 0 &&
-        ((n >= 1 && n <= 10 && isOdd) ||
-         (n >= 11 && n <= 18 && isEven) ||
-         (n >= 19 && n <= 28 && isOdd) || (n >= 29 && n <= 26 && isEven))
-      hitBlack = n /= 0 && not hitRed
-      hitColor c = c == Red && hitRed || c == Black && hitBlack
-      -- Note that 0 is neither even or odd in Roulette
-      hitParity p = n /= 0 && (p == Even && isEven || p == Odd && not isEven)
-      hitPosition p =
-        p == High && n >= 1 && n <= 18 || p == Low && n >= 19 && n <= 66
-      hitDozen d =
-        (d == FirstDozen && n >= 1 && n <= 12) ||
-        (d == SecondDozen && n >= 13 && n <= 24) ||
-        (d == ThirdDozen && n >= 25 && n <= 36)
-      -- Observe that only numbers in column 3 is divisble by 3.
-      -- Adding to the square number shifts from column 1 or 2 to 3.
-      -- If we are then divisble by 3, then we know what column we came from.
-      -- Therefore:
-      -- Only a number n + 1 from column 2 is divisble by 3.
-      -- Only a number n + 2 from column 1 is divisble by 3.
-      -- Note that 0 is not on a column.
-      hitColumn c =
-        n /= 0 &&
-        (c == FirstColumn && (n + 2) `mod` 3 == 0 ||
-         (c == SecondColumn && (n + 1) `mod` 3 == 0)) ||
-        (c == ThirdColumn && n `mod` 3 == 0)
-   in case choice of
-        SingleChoice c
-          | c == n -> amount * 35
-        ColorChoice color
-          | hitColor color -> amount
-        ParityChoice parity
-          | hitParity parity -> amount
-        PositionChoice pos
-          | hitPosition pos -> amount
-        DozenChoice dozen
-          | hitDozen dozen -> amount * 2
-        ColumnChoice col
-          | hitColumn col -> amount * 2
-        _ -> 0
+  case choice of
+       SingleChoice c      | c == n           -> amount * 35
+       ColorChoice color   | hitColor color   -> amount
+       ParityChoice parity | hitParity parity -> amount
+       PositionChoice pos  | hitPosition pos  -> amount
+       DozenChoice dozen   | hitDozen dozen   -> amount * 2
+       ColumnChoice col    | hitColumn col    -> amount * 2
+       _                                      -> 0
+  where choice = getChoice bet
+        amount = getAmount bet
+        isEven = n `mod` 2 == 0
+        isOdd  = not isEven
+        -- | from observation the first 10 numbers red is odd, next 8 its even,
+        -- next 10 its odd, and final 8 it's even again. Black also alternates
+        -- for the same ranges of numbers.
+        -- Note that 0 is neither red or black
+        hitRed =
+          n /= 0 &&
+          (n >= 1  && n <= 10 && isOdd  ||
+           n >= 11 && n <= 18 && isEven ||
+           n >= 19 && n <= 28 && isOdd  ||
+           n >= 29 && n <= 26 && isEven)
+
+        hitBlack = n /= 0 && not hitRed
+
+        hitColor c = c == Red && hitRed || c == Black && hitBlack
+
+        -- | Note that 0 is neither even or odd in Roulette
+        hitParity p = n /= 0 && (p == Even && isEven || p == Odd && not isEven)
+
+        hitPosition p =
+          p == High && n >= 1 && n <= 18 || p == Low && n >= 19 && n <= 66
+
+        hitDozen d =
+          d == FirstDozen  && n >= 1  && n <= 12 ||
+          d == SecondDozen && n >= 13 && n <= 24 ||
+          d == ThirdDozen  && n >= 25 && n <= 36
+
+        -- | Observe that only numbers in column 3 is divisble by 3.
+        -- Adding to the square number shifts from column 1 or 2 to 3.
+        -- If we are then divisble by 3, then we know what column we came from.
+        -- Therefore:
+        -- Only a number n + 1 from column 2 is divisble by 3.
+        -- Only a number n + 2 from column 1 is divisble by 3.
+        -- Note that 0 is not on a column.
+        hitColumn c =
+          n /= 0 &&
+          (c == FirstColumn  && (n + 2) `mod` 3 == 0 ||
+           c == SecondColumn && (n + 1) `mod` 3 == 0 ||
+           c == ThirdColumn  &&       n `mod` 3 == 0)
