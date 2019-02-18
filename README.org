@@ -79,6 +79,6 @@
 
 ** Building and Running
 
-   1. clone the repo
-   2. install [[https://docs.haskellstack.org/en/stable/README/][stack]]
-   3. cd into the directory of the repository and =stack run=
+   1. Get nix: https://nixos.org/nix/
+   2. Install cabal =nix-env -f "<nixpkgs>" -iA haskellPackages.cabal-install=
+   3. Enter a nix shell =nix-shell= and run =cabal new-run=
