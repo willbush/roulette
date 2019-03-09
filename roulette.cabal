@@ -13,7 +13,12 @@ category:            Game
 executable roulette
   main-is:             Main.hs
   other-modules: GameTypes, GamePrompts
-  -- other-extensions:
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
   build-depends:
       base ^>=4.12.0.0
     , random
