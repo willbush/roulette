@@ -12,7 +12,7 @@ category:            Game
 
 executable roulette
   main-is:             Main.hs
-  -- other-modules:
+  other-modules: GameTypes, GamePrompts
   -- other-extensions:
   build-depends:
       base ^>=4.12.0.0
