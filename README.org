@@ -81,5 +81,5 @@
 
    1. Get nix: https://nixos.org/nix/
    2. Install cabal ~nix-env -f "<nixpkgs>" -iA haskellPackages.cabal-install~
-   3. In the folder of this project run ~nix-shell --run "cabal new-run"~
+   3. In the folder of this project run ~nix-shell --run 'cabal new-run'~
 
