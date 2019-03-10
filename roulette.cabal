@@ -1,26 +1,34 @@
-cabal-version:       2.4
+cabal-version: 2.4
 
-name:                roulette
-version:             0.1.0.0
-synopsis:            A simplified text based roulette game
-homepage:            https://github.com/willbush/roulette#readme
-license:             MIT
-license-file:        LICENSE
-author:              William Bush
-maintainer:          will.g.bush@gmail.com
-category:            Game
+name:          roulette
+version:       0.1.0.0
+synopsis:      A simplified text based roulette game
+homepage:      https://github.com/willbush/roulette#readme
+license:       MIT
+license-file:  LICENSE
+author:        William Bush
+maintainer:    will.g.bush@gmail.com
+category:      Game
 
 executable roulette
   main-is:             Main.hs
-  other-modules: GameTypes, GamePrompts
+  other-modules:
+    GameTypes
+    GamePrompts
+    Util
   ghc-options:
     -Wall
     -Wcompat
+    -Widentities
     -Wincomplete-record-updates
     -Wincomplete-uni-patterns
+    -Wpartial-fields
     -Wredundant-constraints
+
   build-depends:
       base ^>=4.12.0.0
+    , rio >=0.1.8.0
     , random
+    , text
   hs-source-dirs:      src
   default-language:    Haskell2010

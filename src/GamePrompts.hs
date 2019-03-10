@@ -1,6 +1,11 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 module GamePrompts where
 
-import GameTypes
+import           GameTypes
+import           RIO
+import           Util      (showText)
 
 gambleAmountPrompt :: NumPrompt
 gambleAmountPrompt =
@@ -18,11 +23,9 @@ betAmountPrompt balanceAvailable = NumPrompt prompt 1 maxBetAmount
   where
     maxBetAmount = min 500 balanceAvailable
     prompt =
-      concat
-        [ "Please give a bet amount in whole numbers between 1 and "
-        , show maxBetAmount
-        , ": "
-        ]
+      "Please give a bet amount in whole numbers between 1 and "
+        <> showText maxBetAmount
+        <> ": "
 
 singleBetPrompt :: NumPrompt
 singleBetPrompt =

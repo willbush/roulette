@@ -1,10 +1,17 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
-import Data.List     (foldl')
-import GamePrompts
-import GameTypes
-import System.Random (randomRIO)
-import Text.Read     (readMaybe)
+import           Data.Text.IO  (putStrLn)
+import           GamePrompts
+import           GameTypes
+import           RIO
+import           RIO.List      (foldl')
+import           RIO.Partial   (toEnum)
+import           System.IO     (getLine)
+import           System.Random (randomRIO)
+import           Util          (showText)
 
 main :: IO ()
 main = do
@@ -20,7 +27,7 @@ playRoulette :: Balance -> IO Balance
 playRoulette balance = do
   bets <- collectBets balance
   spin <- randomRIO (0, 36 :: SquareNum)
-  putStrLn $ "!!!!!!! Spun a " ++ show spin ++ " !!!!!!!"
+  putStrLn $ "!!!!!!! Spun a " <> showText spin <> " !!!!!!!"
   let newBalance = foldl' calcNewBalance balance bets
       calcNewBalance :: Balance -> Bet -> Balance
       calcNewBalance currentBalance bet =
@@ -28,8 +35,8 @@ playRoulette balance = do
          in if winnings > 0
               then currentBalance + winnings
               else currentBalance - getAmount bet
-   in do putStrLn $ "Net Gain: " ++ formatMoney (newBalance - balance)
-         putStrLn $ "Your Balance: " ++ formatMoney newBalance
+   in do putStrLn $ "Net Gain: " <> formatMoney (newBalance - balance)
+         putStrLn $ "Your Balance: " <> formatMoney newBalance
          if newBalance > 0
            then do
              playAgain <- promptToPlayAgain
@@ -46,8 +53,8 @@ collectBets balance = do
     go [] _ bets = pure bets
     go _ 0 bets = pure bets
     go (betNum:betNums) available bets = do
-      putStrLn $ "\nBet number " ++ show betNum ++ ":"
-      putStrLn $ "The amount available to gamble is: " ++ formatMoney available
+      putStrLn $ "\nBet number " <> showText betNum <> ":"
+      putStrLn $ "The amount available to gamble is: " <> formatMoney available
       amount <- promptForNum $ betAmountPrompt available
       betTypeNum <- promptForNum betTypePrompt
       bet <- getBet amount $ toEnum (betTypeNum - 1)
@@ -75,11 +82,11 @@ getBet amount t =
       n <- promptForNum columnBetPrompt
       pure $ Bet amount $ ColumnChoice $ toEnum (n - 1)
 
-formatMoney :: Amount -> String
+formatMoney :: Amount -> Text
 formatMoney x =
   if x < 0
-    then "-$" ++ show x
-    else "$" ++ show x
+    then "-$" <> showText x
+    else "$" <> showText x
 
 promptToPlayAgain :: IO Bool
 promptToPlayAgain = (== 1) <$> promptForNum playPrompt
@@ -90,11 +97,11 @@ promptForNum prompt = prompUntilValid
     min' = getMin prompt
     max' = getMax prompt
     errorMsg =
-      concat
+      mconcat
         [ "Not a valid integer in bounds of min: "
-        , show min'
+        , showText min'
         , ", max: "
-        , show max'
+        , showText max'
         ]
     prompUntilValid = do
       putStrLn $ getPrompt prompt

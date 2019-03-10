@@ -1,4 +1,8 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 module GameTypes where
+
+import           RIO
 
 type Balance = Int
 
@@ -7,9 +11,9 @@ type SquareNum = Int
 type Amount = Int
 
 data NumPrompt = NumPrompt
-  { getPrompt :: !String
-  , getMin :: !Int
-  , getMax :: !Int
+  { getPrompt :: !Text
+  , getMin    :: !Int
+  , getMax    :: !Int
   }
 
 data Color
