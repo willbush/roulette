@@ -1,30 +1,9 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "default", doBenchmark ? false }:
-
 let
+  pinnedPkgs = import ./pkgs-from-json.nix { json = ./nixos-19-03.json; };
+  myPackages = (import ./release.nix { withHoogle = true; } );
 
-  inherit (nixpkgs) pkgs;
-
-  f = { mkDerivation, base, random, rio, stdenv, text }:
-      mkDerivation {
-        pname = "roulette";
-        version = "0.1.0.0";
-        src = ./.;
-        isLibrary = false;
-        isExecutable = true;
-        executableHaskellDepends = [ base random rio text ];
-        homepage = "https://github.com/willbush/roulette#readme";
-        description = "A simplified text based roulette game";
-        license = stdenv.lib.licenses.mit;
-      };
-
-  haskellPackages = if compiler == "default"
-                       then pkgs.haskellPackages
-                       else pkgs.haskell.packages.${compiler};
-
-  variant = if doBenchmark then pkgs.haskell.lib.doBenchmark else pkgs.lib.id;
-
-  drv = variant (haskellPackages.callPackage f {});
-
+  projectDrvEnv = myPackages.project1.env.overrideAttrs (oldAttrs: rec {
+    buildInputs = oldAttrs.buildInputs ++ [ pinnedPkgs.haskellPackages.cabal-install ];
+  });
 in
-
-  if pkgs.lib.inNixShell then drv.env else drv
+  projectDrvEnv
