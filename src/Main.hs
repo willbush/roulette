@@ -85,7 +85,7 @@ getBet amount t =
 formatMoney :: Amount -> Text
 formatMoney x =
   if x < 0
-    then "-$" <> showText x
+    then "-$" <> showText (abs x)
     else "$" <> showText x
 
 promptToPlayAgain :: IO Bool
