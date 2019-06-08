@@ -1,7 +1,7 @@
 # cabal
+dist/
 dist-newstyle/
 /.ghc.environment.*
 
 # emacs
-dist/
 TAGS
