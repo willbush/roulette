@@ -1,6 +1,6 @@
 { withHoogle ? false }:
 let
-  pinnedPkgs = import ./pkgs-from-json.nix { json = ./nixos-19-03.json; };
+  pinnedPkgs = import ./pkgs-from-json.nix { json = ./nixos-unstable.json; };
 
   customHaskellPkgs = pinnedPkgs.haskellPackages.override (old: {
     overrides = pinnedPkgs.lib.composeExtensions (old.overrides or (_: _: {})) (self: super: {

@@ -1,5 +1,5 @@
 let
-  pinnedPkgs = import ./nix/pkgs-from-json.nix { json = ./nix/nixos-19-03.json; };
+  pinnedPkgs = import ./nix/pkgs-from-json.nix { json = ./nix/nixos-unstable.json; };
   myPackages = (import ./nix/release.nix { withHoogle = true; } );
 
   projectDrvEnv = myPackages.project1.env.overrideAttrs (oldAttrs: rec {
