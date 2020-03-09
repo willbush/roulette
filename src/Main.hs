@@ -7,7 +7,6 @@ import           Data.Text.IO  (putStrLn)
 import           GamePrompts
 import           GameTypes
 import           RIO
-import           RIO.List      (foldl')
 import           RIO.Partial   (toEnum)
 import           System.IO     (getLine)
 import           System.Random (randomRIO)
